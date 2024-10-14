@@ -5,16 +5,34 @@ using UnityEngine;
 
 public class SliderValue : MonoBehaviour
 {
-    public Slider volumeSlider;
+    public Slider masterSlider;
+    public Slider musicSlider;
+    public Slider sfxSlider;
     // Start is called before the first frame update
     void Start()
     {
-        
-    }
+        masterSlider.value = VolumeControl.Instance.GetMasterVolume();
+        masterSlider.onValueChanged.AddListener(SetMasterVolume);
 
-    // Update is called once per frame
-    void Update()
+        musicSlider.value = VolumeControl.Instance.GetMusicVolume();
+        musicSlider.onValueChanged.AddListener(SetMusicVolume);
+
+        sfxSlider.value = VolumeControl.Instance.GetSFXVolume();
+        sfxSlider.onValueChanged.AddListener(SetSfxVolume);
+    }
+    private void SetMasterVolume(float volume)
     {
-        
+        VolumeControl.Instance.masterVolume = volume;
+        VolumeControl.Instance.SetMasterVolume(volume);
+    }
+    private void SetMusicVolume(float volume)
+    {
+        VolumeControl.Instance.musicVolume = volume;
+        VolumeControl.Instance.SetMusicVolume(volume);
+    }
+    private void SetSfxVolume(float volume)
+    {
+        VolumeControl.Instance.musicVolume = volume;
+        VolumeControl.Instance.SetSfxVolume(volume);
     }
 }

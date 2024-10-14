@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -8,34 +9,26 @@ public class PlayerMovement : MonoBehaviour
     public KeyCode down;
     private Rigidbody2D myRB;
     [SerializeField]
-    private float speed;
+    private float speed = 8;
+    private float direction;
     private float limitSuperior;
     private float limitInferior;
-    public int player_lives = 4;
+    public int player_lives = 3;
     // Start is called before the first frame update
     void Start()
     {
-        if (up == KeyCode.None) up = KeyCode.UpArrow;
-        if (down == KeyCode.None) down = KeyCode.DownArrow;
+        //if (up == KeyCode.None) up = KeyCode.UpArrow;
+        //if (down == KeyCode.None) down = KeyCode.DownArrow;
         myRB = GetComponent<Rigidbody2D>();
         SetMinMax();
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKey(up) && transform.position.y < limitSuperior)
-        {
-            myRB.velocity = new Vector2(0f, speed);
-        }
-        else if (Input.GetKey(down) && transform.position.y > limitInferior)
-        {
-            myRB.velocity = new Vector2(0f, -speed);
-        }
-        else
-        {
-            myRB.velocity = Vector2.zero;
-        }
+    void FixedUpdate()
+    {   
+        myRB.velocity = new Vector2(myRB.velocity.x, speed*direction);        
+        float clamp = Mathf.Clamp(transform.position.y, limitInferior, limitSuperior);
+        transform.position = new Vector2(transform.position.x, clamp);
     }
 
     void SetMinMax()
@@ -51,5 +44,13 @@ public class PlayerMovement : MonoBehaviour
         {
             CandyGenerator.instance.ManageCandy(other.gameObject.GetComponent<CandyController>(), this);
         }
+        if (other.tag == "Enemy")
+        {
+            player_lives = player_lives - 1;
+        }
+    }
+    public void ReadMovementX(InputAction.CallbackContext context)
+    {
+        direction = context.ReadValue<float>();
     }
 }
